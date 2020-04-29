@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "devel": "npx parcel watch --no-hmr index.html& npx tsc -p . -w",
-    "build": "rm docs/* && npx parcel build  --out-dir docs --no-source-maps index.html& npx tsc -p ."
+    "build": "rm docs/* && npx parcel build  --out-dir docs --no-source-maps --public-url ./showArrow/ index.html& npx tsc -p ."
   },
   "dependencies": {
     "apache-arrow": "0.17.0",
