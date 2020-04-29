@@ -16,7 +16,10 @@ function renderHeader(ds: Table, thead: HTMLTableSectionElement, columns: string
 }
 
 function renderBody(ds: Table, tbody: HTMLTableSectionElement, columns: string[]) {
-    for (let i = 0; i < ds.length; i++) {
+    const checkboxFirstRows = document.querySelector('.controls #showFirstRows')! as HTMLInputElement;
+
+    const numRows = Math.min(ds.length, checkboxFirstRows.checked ? 1000 : Infinity);
+    for (let i = 0; i < numRows; i++) {
         const tr = document.createElement('tr');
         tbody.appendChild(tr);
 
@@ -58,18 +61,23 @@ function renderControls(ds: Table) {
     }
 
     const metadataDiv = document.querySelector('.controls')! as HTMLElement;
-    const checkbox = document.querySelector('.controls input')! as HTMLInputElement;
+    const checkboxMetadata = document.querySelector('.controls #showMetadata')! as HTMLInputElement;
+    const checkboxFirstRows = document.querySelector('.controls #showFirstRows')! as HTMLInputElement;
     const messageBox = document.querySelector('.controls pre')! as HTMLInputElement;
     const downloadLink = document.querySelector('.controls a')! as HTMLAnchorElement;
 
     downloadLink.href = document.querySelector('input')!.value;
     metadataDiv.style.display = 'inline';
-    metadataDiv.onchange = () => {
-        if (checkbox.checked) {
+    checkboxMetadata.onchange = () => {
+        if (checkboxMetadata.checked) {
             messageBox.innerText = stringifyMetadata(ds);
         } else {
             messageBox.innerText = '';
         }
+    }
+    checkboxFirstRows.onchange = () => {
+        cleanTable();
+        renderTable(ds);
     }
 }
 
@@ -101,14 +109,14 @@ async function showArrow(url?: string) {
 function main() {
     const button = document.querySelector('button')!;
     const input = document.querySelector('input')!;
-
+    
     const params = new URLSearchParams(document.location.search);
     if (params.has('file')) {
         const url = params.get('file')!;
         input.value = url;
     }
-
-    const downloadAndShow = async () => {
+    
+    async function downloadAndShow() {
         button.innerText = "loading ..."
         cleanTable();
         const url = input.value;
@@ -118,6 +126,9 @@ function main() {
             alert(error.message);
         }
         button.innerText = "SHOW"
+        params.set('file', url);
+
+        history.pushState(null, document.title, `${document.location.origin}${document.location.pathname}?${params.toString()}`);
     };
 
     button.onclick = downloadAndShow;
