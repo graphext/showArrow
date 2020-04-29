@@ -5,7 +5,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "devel": "npx parcel watch --no-hmr index.html& npx tsc -p . -w"
+    "devel": "npx parcel watch --no-hmr index.html& npx tsc -p . -w",
+    "build": "npx parcel build  --out-dir docs index.html& npx tsc -p ."
   },
   "dependencies": {
     "apache-arrow": "0.17.0",
