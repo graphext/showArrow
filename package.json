@@ -1,0 +1,16 @@
+{
+  "name": "showArrow",
+  "version": "1.0.0",
+  "description": "Load an arrow file and show a table ",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "devel": "npx parcel watch --no-hmr index.html& npx tsc -p . -w"
+  },
+  "dependencies": {
+    "apache-arrow": "0.17.0",
+    "parcel-bundler": "^1.12.4",
+    "typescript": "^3.7.3"
+  },
+  "browserslist": ["last 2 Chrome versions"]
+}
