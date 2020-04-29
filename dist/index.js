@@ -76,12 +76,36 @@ function renderTable(ds) {
     renderHeader(ds, thead, columnNames);
     renderBody(ds, tbody, columnNames);
 }
+function renderControls(ds) {
+    function stringifyMetadata(ds) {
+        return Array.from(ds.schema.metadata.entries()).map(function (_a) {
+            var k = _a[0], v = _a[1];
+            return k + " => \n " + JSON.stringify(JSON.parse(v), null, 4);
+        }).join("");
+    }
+    var metadataDiv = document.querySelector('.controls');
+    var checkbox = document.querySelector('.controls input');
+    var messageBox = document.querySelector('.controls pre');
+    var downloadLink = document.querySelector('.controls a');
+    downloadLink.href = document.querySelector('input').value;
+    metadataDiv.style.display = 'inline';
+    metadataDiv.onchange = function () {
+        if (checkbox.checked) {
+            messageBox.innerText = stringifyMetadata(ds);
+        }
+        else {
+            messageBox.innerText = '';
+        }
+    };
+}
 function cleanTable() {
     console.log('cleanTable');
     var thead = document.querySelector('thead');
     var tbody = document.querySelector('tbody');
     thead.innerHTML = '';
     tbody.innerHTML = '';
+    var metadataDiv = document.querySelector('.controls');
+    metadataDiv.style.display = 'none';
 }
 function showArrow(url) {
     return __awaiter(this, void 0, void 0, function () {
@@ -92,12 +116,13 @@ function showArrow(url) {
                     if (url == null) {
                         return [2 /*return*/];
                     }
-                    return [4 /*yield*/, Table.from(fetch((url)))];
+                    return [4 /*yield*/, Table.from(fetch(url))];
                 case 1:
                     table = _a.sent();
                     console.log(table);
                     window['table'] = table;
                     console.log(table.schema);
+                    renderControls(table);
                     renderTable(table);
                     console.log('length: ', table.length);
                     return [2 /*return*/];
@@ -109,17 +134,31 @@ function main() {
     var _this = this;
     var button = document.querySelector('button');
     var input = document.querySelector('input');
+    var params = new URLSearchParams(document.location.search);
+    if (params.has('file')) {
+        var url = params.get('file');
+        input.value = url;
+    }
     var downloadAndShow = function () { return __awaiter(_this, void 0, void 0, function () {
-        var url;
+        var url, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     button.innerText = "loading ...";
                     cleanTable();
                     url = input.value;
-                    return [4 /*yield*/, showArrow(url)];
+                    _a.label = 1;
                 case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, showArrow(url)];
+                case 2:
                     _a.sent();
+                    return [3 /*break*/, 4];
+                case 3:
+                    error_1 = _a.sent();
+                    alert(error_1.message);
+                    return [3 /*break*/, 4];
+                case 4:
                     button.innerText = "SHOW";
                     return [2 /*return*/];
             }

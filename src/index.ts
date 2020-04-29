@@ -48,21 +48,50 @@ function renderTable(ds: Table) {
     renderBody(ds, tbody, columnNames);
 }
 
+function renderControls(ds: Table) {
+    
+    function stringifyMetadata(ds: Table): string {
+        return Array.from(
+            ds.schema.metadata.entries()).map(
+                ([k, v]) => `${k} => \n ${JSON.stringify(JSON.parse(v), null, 4)}`
+            ).join("");
+    }
+
+    const metadataDiv = document.querySelector('.controls')! as HTMLElement;
+    const checkbox = document.querySelector('.controls input')! as HTMLInputElement;
+    const messageBox = document.querySelector('.controls pre')! as HTMLInputElement;
+    const downloadLink = document.querySelector('.controls a')! as HTMLAnchorElement;
+
+    downloadLink.href = document.querySelector('input')!.value;
+    metadataDiv.style.display = 'inline';
+    metadataDiv.onchange = () => {
+        if (checkbox.checked) {
+            messageBox.innerText = stringifyMetadata(ds);
+        } else {
+            messageBox.innerText = '';
+        }
+    }
+}
+
 function cleanTable() {
     console.log('cleanTable');
     const thead = document.querySelector('thead')!;
     const tbody = document.querySelector('tbody')!;
     thead.innerHTML = '';
     tbody.innerHTML = '';
+    const metadataDiv = document.querySelector('.controls')! as HTMLElement;
+    metadataDiv.style.display = 'none';
 }
 
 async function showArrow(url?: string) {
     if (url == null) { return; }
-    const table = await Table.from(fetch((url)));
+    const table = await Table.from(fetch(url));
     console.log(table);
     window['table'] = table;
 
     console.log(table.schema);
+
+    renderControls(table);
     renderTable(table);
 
     console.log('length: ', table.length);
@@ -73,11 +102,21 @@ function main() {
     const button = document.querySelector('button')!;
     const input = document.querySelector('input')!;
 
+    const params = new URLSearchParams(document.location.search);
+    if (params.has('file')) {
+        const url = params.get('file')!;
+        input.value = url;
+    }
+
     const downloadAndShow = async () => {
         button.innerText = "loading ..."
         cleanTable();
         const url = input.value;
-        await showArrow(url);
+        try {
+            await showArrow(url);
+        } catch(error) {
+            alert(error.message);
+        }
         button.innerText = "SHOW"
     };
 
@@ -87,7 +126,6 @@ function main() {
             downloadAndShow();
         }
     };
-
 
 }
 

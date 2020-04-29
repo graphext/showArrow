@@ -1,5 +1,5 @@
 
-input {
+.urlInput {
   padding: 4px;
   width: 400px;
   height: 32px;
@@ -13,6 +13,11 @@ button {
   background: #2857A7;
   color: white;
   border-radius: 4px;
+}
+
+.controls {
+  display: none;
+  margin: 8px;
 }
 
 /*//////////////////////////////////////////////////////////////////
