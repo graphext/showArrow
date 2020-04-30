@@ -53,7 +53,7 @@ table * {
   position: relative;
 }
 table td, table th {
-  padding-left: 8px;
+  padding-left: 16px;
 }
 table thead tr {
   height: 48px;
@@ -68,6 +68,8 @@ table tbody tr:last-child {
 }
 table td, table th {
   text-align: left;
+  overflow-wrap: break-word;
+  max-width: 600px;
 }
 
 tbody tr:nth-child(even) {
