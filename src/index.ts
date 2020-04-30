@@ -52,25 +52,18 @@ function renderTable(ds: Table) {
 }
 
 function renderControls(ds: Table) {
-    
-    function stringifyMetadata(ds: Table): string {
-        return Array.from(
-            ds.schema.metadata.entries()).map(
-                ([k, v]) => `${k} => \n ${JSON.stringify(JSON.parse(v), null, 4)}`
-            ).join("");
-    }
 
     const metadataDiv = document.querySelector('.controls')! as HTMLElement;
     const checkboxMetadata = document.querySelector('.controls #showMetadata')! as HTMLInputElement;
     const checkboxFirstRows = document.querySelector('.controls #showFirstRows')! as HTMLInputElement;
-    const messageBox = document.querySelector('.controls pre')! as HTMLInputElement;
+    const messageBox = document.querySelector('.controls #tableMetadata')! as HTMLInputElement;
     const downloadLink = document.querySelector('.controls a')! as HTMLAnchorElement;
 
     downloadLink.href = document.querySelector('input')!.value;
     metadataDiv.style.display = 'inline';
     checkboxMetadata.onchange = () => {
         if (checkboxMetadata.checked) {
-            messageBox.innerText = stringifyMetadata(ds);
+            messageBox.innerText = stringifyMap(ds.schema.metadata);
         } else {
             messageBox.innerText = '';
         }
@@ -81,8 +74,38 @@ function renderControls(ds: Table) {
     }
 }
 
+function stringifyMap(obj: Map<string, string | Map<string, string>>, indent = 4): string {
+    return Array.from(obj).map(
+        ([k, v]) => {
+            if (v instanceof Map) {
+                return `\n "${k}": ${stringifyMap(v, indent + 4)}`;
+            }
+            return `\n "${k}": ${JSON.stringify(JSON.parse(v), null, indent)}`;
+        }
+    ).join("");
+}
+
+function renderColumns(ds: Table) {
+    const columnsDiv = document.querySelector('.columns')! as HTMLElement;
+    const columnTemplate = document.getElementById('columnInfoTemplate')! as HTMLTemplateElement;
+
+    for (let i = 0; i < ds.numCols; i++) {
+        const column = ds.getColumnAt(i)!;
+
+        const columnElement = columnTemplate.content.cloneNode(true) as HTMLElement;
+        const columnName = columnElement.querySelector('.name')! as HTMLElement;
+        const columnType = columnElement.querySelector('.type')! as HTMLElement;
+        const messageBox = columnElement.querySelector('pre')!;
+
+        columnName.innerText = column.name;
+        columnType.innerText = JSON.parse(column.metadata.get('type')!);
+        messageBox.innerText = stringifyMap(column.metadata);
+
+        columnsDiv.appendChild(columnElement);
+    }
+}
+
 function cleanTable() {
-    console.log('cleanTable');
     const thead = document.querySelector('thead')!;
     const tbody = document.querySelector('tbody')!;
     thead.innerHTML = '';
@@ -100,6 +123,7 @@ async function showArrow(url?: string) {
     console.log(table.schema);
 
     renderControls(table);
+    renderColumns(table);
     renderTable(table);
 
     console.log('length: ', table.length);
@@ -123,6 +147,7 @@ function main() {
         try {
             await showArrow(url);
         } catch(error) {
+            console.error(error);
             alert(error.message);
         }
         button.innerText = "SHOW"

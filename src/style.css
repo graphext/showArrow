@@ -23,6 +23,19 @@ button {
 .controls span {
   margin-left: 16px;
 }
+
+.columns {
+  margin: 16px;
+}
+
+.columns .name {
+  font-weight: bold;
+}
+.columns .type {
+  font-size: smaller;
+  margin: 0 8px;
+}
+
 /*//////////////////////////////////////////////////////////////////
 [ Table ]*/
 

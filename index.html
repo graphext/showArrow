@@ -15,7 +15,11 @@
         <a>Download Arrow</a>
         <span>Show metadata: </span><input type="checkbox" name="show" id="showMetadata" >
         <span>Show first 1K rows: </span><input type="checkbox" name="show" id="showFirstRows" checked>
-        <pre></pre>
+        <pre id="tableMetadata"></pre>
+
+        <div class="columns">
+            <h3>Columns: </h3>
+        </div>
     </span>
 
     
@@ -24,7 +28,16 @@
         <tbody></tbody>
         <tfoot></tfoot>
     </table>
+
+    <template id="columnInfoTemplate">
+        <details>
+            <summary><span class="name"></span><span class="type"></span></summary>
+            <pre></pre>
+        </details>
+    </template>
+
     <script src="dist/index.js"></script>
+
     </body>
     
     </html>
