@@ -98,7 +98,7 @@ function renderColumns(ds: Table) {
         const messageBox = columnElement.querySelector('pre')!;
 
         columnName.innerText = column.name;
-        columnType.innerText = `${column.type.toString()} · ${JSON.parse(column.metadata.get('type')!)}`;
+        columnType.innerText = `${column.type.toString()}`;
         messageBox.innerText = stringifyMap(column.metadata);
 
         columnsDiv.appendChild(columnElement);
